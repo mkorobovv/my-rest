@@ -23,14 +23,14 @@ type Item struct {
 }
 
 type Payment struct {
-	TransactionID string  `json:"transaction_id"`
-	Currency      string  `json:"currency"`
-	Amount        float64 `json:"amount"`
-	Provider      string  `json:"provider"`
-	PaymentDt     string  `json:"payment_dt"`
-	DeliveryCost  float64 `json:"delivery_cost"`
-	GoodsTotal    float64 `json:"goods_total"`
-	Bank          string  `json:"bank"`
+	TransactionID string    `json:"transaction_id"`
+	Currency      string    `json:"currency"`
+	Amount        float64   `json:"amount"`
+	Provider      string    `json:"provider"`
+	PaymentDt     time.Time `json:"payment_dt"`
+	DeliveryCost  float64   `json:"delivery_cost"`
+	GoodsTotal    float64   `json:"goods_total"`
+	Bank          string    `json:"bank"`
 }
 
 type Delivery struct {
