@@ -1,0 +1,60 @@
+[Application]
+    Name = "orders"
+    Version = "1.0.0"
+
+[Infrastructure]
+    [Infrastructure.OrdersDB]
+        Host = "localhost"
+        Port = "5432"
+        Password = "postgres"
+        User = "orders_service"
+        Name = "orders"
+
+        TimeZone = "Europe/Moscow"
+        MaxOpenConns = 500
+        MaxIdleConns = 2
+        ConnMaxLifetime = 0
+        ConnMaxIdleTime = 0
+    [Infrastructure.OrdersConsumer]
+        Hosts = "localhost:9092,localhost:9093"
+        User = "orders_service"
+        Password = "kafka"
+        SASLMechanism = "SCRAM-SHA-256"
+    [Infrastructure.OrdersProducer]
+        Hosts = "localhost:9092,localhost:9093"
+        User = "orders_service"
+        Password = "kafka"
+        SASLMechanism = "SCRAM-SHA-256"
+
+[Adapters]
+    [Primary]
+        [PprofAdapter]
+            [Adapters.Primary.PprofAdapter.Server]
+                Port = ":9090"
+                Name="pprof-adapter"
+                ReadTimeout="30s"
+                WriteTimeout="0"
+                ReadHeaderTimeout="30s"
+                ShutdownTimeout="3s"
+        [HttpAdapter]
+            [Adapters.Primary.HttpAdapter.Server]
+                Port = ":8080"
+                Name="http-adapter"
+                ReadTimeout="30s"
+                WriteTimeout="500s"
+                ReadHeaderTimeout="30s"
+                ShutdownTimeout="3s"
+            [Adapters.Primary.HttpAdapter.Router]
+                [Adapters.Primary.HttpAdapter.Router.Shutdown]
+                    Duration = 15
+                [Adapters.Primary.HttpAdapter.Router.Timeout]
+                    Duration = 60
+        [Adapters.Primary.KafkaAdapterConsumer]
+            [Adapters.Primary.KafkaAdapterConsumer.OrdersConsumer]
+                Topic = "topic_orders"
+                GroupID = "service_orders"
+
+    [Adapters.Secondary]
+        [Adapters.Secondary.KafkaAdapterProducer]
+            [Adapters.Secondary.KafkaAdapterProducer.OrdersProducer]
+                Topic = "topic_reports"

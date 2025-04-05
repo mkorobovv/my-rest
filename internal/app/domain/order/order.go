@@ -14,12 +14,14 @@ type Order struct {
 }
 
 type Item struct {
+	ID         int64   `json:"id"`
+	OrderUID   string  `json:"order_uid"`
 	ChrtID     int64   `json:"chrt_id"`
 	Price      float64 `json:"price"`
 	Name       string  `json:"name"`
-	Sale       int64   `json:"sale"`
+	Sale       *int64  `json:"sale"`
 	TotalPrice float64 `json:"total_price"`
-	NmID       int64   `json:"nm_id"`
+	NmID       *int64  `json:"nm_id"`
 }
 
 type Payment struct {
@@ -34,9 +36,9 @@ type Payment struct {
 }
 
 type Delivery struct {
-	RecipientName string `json:"recipient_name"`
-	PhoneNumber   string `json:"phone_number"`
-	ZipCode       string `json:"zip_code"`
-	Address       string `json:"address"`
-	Email         string `json:"email"`
+	RecipientName string  `json:"recipient_name"`
+	PhoneNumber   string  `json:"phone_number"`
+	ZipCode       string  `json:"zip_code"`
+	Address       string  `json:"address"`
+	Email         *string `json:"email"`
 }

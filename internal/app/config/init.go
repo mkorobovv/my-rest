@@ -3,11 +3,11 @@ package config
 import (
 	"log/slog"
 
-	"github.com/ilyakaznacheev/cleanenv"
+	"github.com/BurntSushi/toml"
 )
 
 func New() (config Config) {
-	err := cleanenv.ReadConfig("./config.yml", &config)
+	_, err := toml.DecodeFile("./config.toml", &config)
 	if err != nil {
 		slog.Error("read config error")
 

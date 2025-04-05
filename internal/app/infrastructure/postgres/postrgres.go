@@ -3,9 +3,11 @@ package postgres
 import (
 	"context"
 	"fmt"
-	"github.com/jmoiron/sqlx"
 	"log/slog"
 	"time"
+
+	_ "github.com/jackc/pgx/v5/stdlib" // db driver
+	"github.com/jmoiron/sqlx"
 )
 
 const driverName = "pgx"
@@ -24,7 +26,7 @@ type Config struct {
 	ConnMaxIdleTime *time.Duration
 }
 
-func New(l *slog.Logger, cfg Config) (*sqlx.DB, error) {
+func New(l *slog.Logger, cfg Config) *sqlx.DB {
 	dbString := fmt.Sprintf("DB host: [%s:%s].", cfg.Host, cfg.Port)
 
 	l.Info(dbString + "Подключение...")
@@ -33,7 +35,7 @@ func New(l *slog.Logger, cfg Config) (*sqlx.DB, error) {
 
 	db, err := sqlx.Open(driverName, connString)
 	if err != nil {
-		return nil, err
+		panic(err)
 	}
 
 	applyConfig(db, cfg)
@@ -43,12 +45,12 @@ func New(l *slog.Logger, cfg Config) (*sqlx.DB, error) {
 
 	err = db.PingContext(ctx)
 	if err != nil {
-		return nil, err
+		panic(err)
 	}
 
 	l.Info(dbString + "Подключено!")
 
-	return db, nil
+	return db
 }
 
 func applyConfig(db *sqlx.DB, cfg Config) {

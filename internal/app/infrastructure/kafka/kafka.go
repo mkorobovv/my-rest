@@ -31,13 +31,14 @@ type Config struct {
 	SASLMechanism string
 }
 
-type Producer struct {
+type ProducerConfig struct {
 	Topic string
 }
 
-type Consumer struct {
-	Topic   string
-	GroupID string
+type ConsumerConfig struct {
+	Topic     string
+	GroupID   string
+	BatchSize int
 }
 
 func New(config Config, groupID string) *kgo.Client {

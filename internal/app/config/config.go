@@ -8,8 +8,14 @@ import (
 )
 
 type Config struct {
-	Adapters       Adapters
+	Application    Application
 	Infrastructure Infrastructure
+	Adapters       Adapters
+}
+
+type Application struct {
+	Name    string
+	Version string
 }
 
 type Infrastructure struct {
@@ -39,37 +45,36 @@ type HttpAdapter struct {
 }
 
 type Router struct {
-	Shutdown             shutdown
-	Timeout              timeout
-	AuthenticationConfig string `config:"envVar"`
-	AuthorizationConfig  string `config:"envVar"`
+	Shutdown Shutdown
+	Timeout  Timeout
 }
 
-type shutdown struct {
+type Shutdown struct {
 	Duration time.Duration
 }
 
-type timeout struct {
+type Timeout struct {
 	Duration time.Duration
 }
 
 type PprofAdapter struct {
 	Server Server
+	Router Router
 }
 
 type Server struct {
 	Port              string
 	Name              string
-	ReadHeaderTimeout time.Duration
-	WriteTimeout      time.Duration
 	ReadTimeout       time.Duration
+	WriteTimeout      time.Duration
+	ReadHeaderTimeout time.Duration
 	ShutdownTimeout   time.Duration
 }
 
 type KafkaAdapterProducer struct {
-	OrdersProducer kafka.Producer
+	OrdersProducer kafka.ProducerConfig
 }
 
 type KafkaAdapterConsumer struct {
-	OrdersConsumer kafka.Consumer
+	OrdersConsumer kafka.ConsumerConfig
 }
