@@ -2,6 +2,10 @@ package main
 
 import (
 	"context"
+	"log"
+	"log/slog"
+	"os"
+
 	http_adapter "github.com/mkorobovv/my-rest/internal/app/adapters/primary/http-adapter"
 	orders_consumer "github.com/mkorobovv/my-rest/internal/app/adapters/primary/orders-consumer"
 	os_singnal_adapter "github.com/mkorobovv/my-rest/internal/app/adapters/primary/os-singnal-adapter"
@@ -10,15 +14,11 @@ import (
 	orders_repository "github.com/mkorobovv/my-rest/internal/app/adapters/secondary/repositories/orders-repository"
 	api_service "github.com/mkorobovv/my-rest/internal/app/application/api-service"
 	orders_processor "github.com/mkorobovv/my-rest/internal/app/application/orders-processor"
+	"github.com/mkorobovv/my-rest/internal/app/config"
 	"github.com/mkorobovv/my-rest/internal/app/infrastructure/kafka"
 	"github.com/mkorobovv/my-rest/internal/app/infrastructure/postgres"
-	"golang.org/x/sync/errgroup"
-	"log"
-	"log/slog"
-	"os"
-
-	"github.com/mkorobovv/my-rest/internal/app/config"
 	"github.com/mkorobovv/my-rest/internal/pkg/logger"
+	"golang.org/x/sync/errgroup"
 )
 
 func main() {
