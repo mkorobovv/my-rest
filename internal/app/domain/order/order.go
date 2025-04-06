@@ -8,6 +8,7 @@ type Order struct {
 	Locale      string    `json:"locale"`
 	CustomerID  int64     `json:"customer_id"`
 	CreatedDt   time.Time `json:"created_dt"`
+	IsDeleted   bool      `json:"is_deleted"`
 	Payment     Payment   `json:"payment"`
 	Delivery    Delivery  `json:"delivery"`
 	Items       []Item    `json:"items"`

@@ -5,6 +5,7 @@ import (
 	http_adapter "github.com/mkorobovv/my-rest/internal/app/adapters/primary/http-adapter"
 	orders_consumer "github.com/mkorobovv/my-rest/internal/app/adapters/primary/orders-consumer"
 	os_singnal_adapter "github.com/mkorobovv/my-rest/internal/app/adapters/primary/os-singnal-adapter"
+	pprof_adatper "github.com/mkorobovv/my-rest/internal/app/adapters/primary/pprof-adatper"
 	orders_producer "github.com/mkorobovv/my-rest/internal/app/adapters/secondary/orders-producer"
 	orders_repository "github.com/mkorobovv/my-rest/internal/app/adapters/secondary/repositories/orders-repository"
 	api_service "github.com/mkorobovv/my-rest/internal/app/application/api-service"
@@ -35,6 +36,7 @@ func main() {
 		app.httpAdapter,
 		app.ordersConsumer,
 		app.ordersProcessor,
+		app.pprofAdapter,
 	)
 	if err != nil {
 		l.Error(err.Error(), "main")
@@ -45,6 +47,7 @@ func main() {
 
 type App struct {
 	httpAdapter     *http_adapter.HttpAdapter
+	pprofAdapter    *pprof_adatper.PprofAdapter
 	ordersConsumer  *orders_consumer.OrdersConsumer
 	ordersProcessor *orders_processor.OrdersProcessor
 	osSignalAdapter *os_singnal_adapter.OsSignalAdapter
@@ -64,6 +67,7 @@ func newApp(l *slog.Logger, cfg config.Config) *App {
 
 	ordersProcessor := orders_processor.New(l, ordersProducer)
 	httpAdapter := http_adapter.New(l, cfg.Adapters.Primary.HttpAdapter, apiService)
+	pprofAdapter := pprof_adatper.New(l, cfg.Adapters.Primary.PprofAdapter)
 	ordersConsumer := orders_consumer.New(l, ordersConsumerConnection, cfg.Adapters.Primary.KafkaAdapterConsumer.OrdersConsumer, apiService)
 
 	return &App{
@@ -71,6 +75,7 @@ func newApp(l *slog.Logger, cfg config.Config) *App {
 		ordersConsumer:  ordersConsumer,
 		ordersProcessor: ordersProcessor,
 		osSignalAdapter: os_singnal_adapter.New(),
+		pprofAdapter:    pprofAdapter,
 	}
 }
 

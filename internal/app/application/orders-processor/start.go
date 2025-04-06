@@ -19,7 +19,7 @@ func (svc *OrdersProcessor) Start(ctx context.Context) error {
 
 		err := svc.ordersProducer.Produce(ctx, order)
 		if err != nil {
-			return err
+			svc.logger.Error(err.Error())
 		}
 
 		select {

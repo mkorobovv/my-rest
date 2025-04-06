@@ -3,10 +3,12 @@ package controller
 import (
 	"encoding/json"
 	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
 func (ctr *Controller) Update(w http.ResponseWriter, r *http.Request) {
-	trackNumber := r.URL.Query().Get("track_number")
+	trackNumber := mux.Vars(r)["trackNumber"]
 
 	err := validateTrackNumber(trackNumber)
 	if err != nil {
@@ -31,6 +33,16 @@ func (ctr *Controller) Update(w http.ResponseWriter, r *http.Request) {
 	err = dtoIn.validate()
 	if err != nil {
 		ctr.handleError(w, err)
+
+		return
+	}
+
+	if trackNumber != *dtoIn.TrackNumber {
+		ctr.handleError(w, responseError{
+			Kind:   "validation",
+			status: http.StatusBadRequest,
+			Detail: "mismatch in track_number",
+		})
 
 		return
 	}

@@ -8,10 +8,10 @@ import (
 	"github.com/mkorobovv/my-rest/internal/app/domain/order"
 )
 
-func (svc *ApiService) Create(ctx context.Context, _order order.Order) (err error) {
-	err = svc.ordersRepository.Create(ctx, _order)
+func (svc *ApiService) Create(ctx context.Context, _order order.Order) (uid string, err error) {
+	uid, err = svc.ordersRepository.Create(ctx, _order)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	err = svc.cache.Storage.Add(_order.TrackNumber, _order, 2*time.Hour)
@@ -19,7 +19,7 @@ func (svc *ApiService) Create(ctx context.Context, _order order.Order) (err erro
 		svc.logger.Error(err.Error(), "cache err")
 	}
 
-	return nil
+	return uid, nil
 }
 
 func (svc *ApiService) Get(ctx context.Context, trackNumber string) (order.Order, error) {

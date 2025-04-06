@@ -199,11 +199,11 @@ func newItems(seed *rand.Rand) []order.Item {
 }
 
 func newItem() order.Item {
-	chrtID := rand.Int63()
+	chrtID := rand.Int63n(1000000)
 	price := float64n(100000) + 1
 	sale := rand.Int63n(71)
 	totalPrice := price * (1 - float64(sale)/100)
-	nmID := rand.Int63()
+	nmID := rand.Int63n(1000000)
 	name := itemName()
 
 	return order.Item{
@@ -272,7 +272,7 @@ func float64n(n int64) float64 {
 	decimalPart := rand.Int63n(n)
 	fractionalPart := rand.Intn(100)
 
-	return float64(decimalPart) + float64(fractionalPart%100)/100
+	return float64(decimalPart) + float64(fractionalPart%100)
 }
 
 func streets() []string {

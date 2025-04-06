@@ -16,14 +16,14 @@
         ConnMaxLifetime = 0
         ConnMaxIdleTime = 0
     [Infrastructure.OrdersConsumer]
-        Hosts = "localhost:9092,localhost:9093"
-        User = "orders_service"
-        Password = "kafka"
+        Hosts = "localhost:9092"
+        User = "orders_consumer"
+        Password = "kafka456"
         SASLMechanism = "SCRAM-SHA-256"
     [Infrastructure.OrdersProducer]
-        Hosts = "localhost:9092,localhost:9093"
-        User = "orders_service"
-        Password = "kafka"
+        Hosts = "localhost:9092"
+        User = "orders_producer"
+        Password = "kafka123"
         SASLMechanism = "SCRAM-SHA-256"
 
 [Adapters]
@@ -57,4 +57,4 @@
     [Adapters.Secondary]
         [Adapters.Secondary.KafkaAdapterProducer]
             [Adapters.Secondary.KafkaAdapterProducer.OrdersProducer]
-                Topic = "topic_reports"
+                Topic = "topic_orders"

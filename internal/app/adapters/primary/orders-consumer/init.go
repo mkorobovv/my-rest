@@ -19,6 +19,10 @@ type OrdersConsumer struct {
 func New(l *slog.Logger, client *kgo.Client, cfg kafka.ConsumerConfig, apiService *api_service.ApiService) *OrdersConsumer {
 	_handler := handler.New(l, apiService)
 
+	client.AddConsumeTopics(cfg.Topic)
+
+	cfg.BatchSize = 10
+
 	return &OrdersConsumer{
 		logger:  l,
 		client:  client,

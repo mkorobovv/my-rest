@@ -12,7 +12,7 @@ func (h *OrdersHandler) Process(ctx context.Context, event cloudevents.Event) er
 		return err
 	}
 
-	err = h.apiService.Create(ctx, order)
+	_, err = h.apiService.Create(ctx, order)
 	if err != nil {
 		return err
 	}

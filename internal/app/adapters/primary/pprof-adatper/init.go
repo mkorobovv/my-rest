@@ -1,25 +1,24 @@
-package http_adapter
+package pprof_adatper
 
 import (
 	"context"
 	"errors"
-	"github.com/mkorobovv/my-rest/internal/app/adapters/primary/http-adapter/controller"
-	"github.com/mkorobovv/my-rest/internal/app/adapters/primary/http-adapter/router"
-	api_service "github.com/mkorobovv/my-rest/internal/app/application/api-service"
+	"github.com/gorilla/mux"
 	"github.com/mkorobovv/my-rest/internal/app/config"
 	"golang.org/x/sync/errgroup"
 	"log/slog"
 	"net/http"
+	"net/http/pprof"
 )
 
-type HttpAdapter struct {
+type PprofAdapter struct {
 	logger *slog.Logger
 	server *http.Server
-	config config.HttpAdapter
+	config config.PprofAdapter
 }
 
-func New(logger *slog.Logger, config config.HttpAdapter, svc *api_service.ApiService) *HttpAdapter {
-	router := newRouter(logger, svc)
+func New(logger *slog.Logger, config config.PprofAdapter) *PprofAdapter {
+	router := newPprofRouter()
 
 	server := &http.Server{
 		Handler:           router,
@@ -29,26 +28,28 @@ func New(logger *slog.Logger, config config.HttpAdapter, svc *api_service.ApiSer
 		Addr:              config.Server.Port,
 	}
 
-	return &HttpAdapter{
+	return &PprofAdapter{
 		logger: logger,
 		server: server,
 		config: config,
 	}
 }
 
-func newRouter(logger *slog.Logger, svc *api_service.ApiService) http.Handler {
-	r := router.New()
+func newPprofRouter() *mux.Router {
+	router := mux.NewRouter()
 
-	ctr := controller.New(logger, svc)
+	pprofSubrouter := router.PathPrefix("/debug/pprof").Subrouter()
 
-	r.AppendRoutes(ctr)
-
-	router := r.Router()
+	pprofSubrouter.HandleFunc("/", pprof.Index)
+	pprofSubrouter.HandleFunc("/cmdline", pprof.Cmdline)
+	pprofSubrouter.HandleFunc("/profile", pprof.Profile)
+	pprofSubrouter.HandleFunc("/symbol", pprof.Symbol)
+	pprofSubrouter.HandleFunc("/trace", pprof.Trace)
 
 	return router
 }
 
-func (a *HttpAdapter) Start(ctx context.Context) error {
+func (a PprofAdapter) Start(ctx context.Context) error {
 	a.logger.Info(a.config.Server.Name + " started")
 
 	g, ctx := errgroup.WithContext(ctx)

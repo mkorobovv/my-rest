@@ -1,16 +1,17 @@
 CREATE SCHEMA IF NOT EXISTS orders;
 
 CREATE TABLE IF NOT EXISTS orders.orders (
-    uid TEXT PRIMARY KEY,
+    uid UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     track_number VARCHAR(20) NOT NULL,
     locale TEXT NOT NULL,
     customer_id BIGINT NOT NULL,
     created_dt TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     transaction_id TEXT NOT NULL,
     currency VARCHAR(3) NOT NULL,
-    AMOUNT NUMERIC(15,2) NOT NULL,
+    amount NUMERIC(15,2) NOT NULL,
     provider TEXT NOT NULL,
     bank TEXT NOT NULL,
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
     payment_dt TIMESTAMP WITHOUT TIME ZONE NOT NULL,
     delivery_cost NUMERIC(15,2) NOT NULL,
     goods_total NUMERIC(15,2) NOT NULL,
@@ -23,7 +24,7 @@ CREATE TABLE IF NOT EXISTS orders.orders (
 
 CREATE TABLE IF NOT EXISTS orders.items (
     id BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    order_uid TEXT,
+    order_uid UUID NOT NULL,
     chrt_id BIGINT NOT NULL,
     price NUMERIC(15,2) NOT NULL,
     name TEXT NOT NULL,
@@ -32,5 +33,5 @@ CREATE TABLE IF NOT EXISTS orders.items (
     nm_id BIGINT,
     CONSTRAINT fk_orders_items
         FOREIGN KEY (order_uid)
-        REFERENCES orders.orders(uid)
+        REFERENCES orders.orders(uid) MATCH FULL
 );

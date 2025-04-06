@@ -57,12 +57,12 @@ func New(config Config, groupID string) *kgo.Client {
 		kgo.RequiredAcks(kgo.AllISRAcks()),
 	}
 
-	saslOption, err := getSASLOption(config)
-	if err != nil {
-		panic(err)
-	}
-
-	options = append(options, saslOption)
+	//saslOption, err := getSASLOption(config)
+	//if err != nil {
+	//	panic(err)
+	//}
+	//
+	//options = append(options, saslOption)
 
 	if groupID != "" {
 		options = append(options,

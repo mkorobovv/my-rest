@@ -16,7 +16,7 @@ type ApiService struct {
 }
 
 type ordersRepository interface {
-	Create(ctx context.Context, order order.Order) (err error)
+	Create(ctx context.Context, order order.Order) (uid string, err error)
 	Get(ctx context.Context, trackNumber string) (order order.Order, err error)
 	Update(ctx context.Context, order order.Order) (err error)
 }

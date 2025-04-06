@@ -12,14 +12,14 @@ func (r *Router) AppendRoutes(ctr *controller.Controller) {
 
 	routes := []Route{
 		{
-			Name:    "/orders/",
-			Path:    "/orders/",
+			Name:    "/orders",
+			Path:    "/orders/{trackNumber}",
 			Method:  http.MethodGet,
 			Handler: http.HandlerFunc(ctr.Get),
 		},
 		{
-			Name:    "/orders/",
-			Path:    "/orders/",
+			Name:    "/orders",
+			Path:    "/orders/{trackNumber}",
 			Method:  http.MethodPut,
 			Handler: http.HandlerFunc(ctr.Update),
 		},

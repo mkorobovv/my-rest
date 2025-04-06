@@ -28,7 +28,7 @@ func (p *OrdersProducer) Produce(ctx context.Context, order order.Order) error {
 		return err
 	}
 
-	ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
+	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
 
 	record := eventToRecord(e)

@@ -3,10 +3,12 @@ package controller
 import (
 	"encoding/json"
 	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
 func (ctr *Controller) Get(w http.ResponseWriter, r *http.Request) {
-	trackNumber := r.URL.Query().Get("track_number")
+	trackNumber := mux.Vars(r)["trackNumber"]
 
 	err := validateTrackNumber(trackNumber)
 	if err != nil {
@@ -28,7 +30,9 @@ func (ctr *Controller) Get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = json.NewEncoder(w).Encode(order)
+	response := toGetOrderResponse(order)
+
+	err = json.NewEncoder(w).Encode(response)
 	if err != nil {
 		ctr.handleError(w, responseError{
 			Kind:   "business",

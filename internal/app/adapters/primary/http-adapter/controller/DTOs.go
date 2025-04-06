@@ -3,11 +3,10 @@ package controller
 import (
 	"errors"
 	"fmt"
-	"net/http"
-	"time"
-
 	"github.com/go-playground/validator/v10"
 	"github.com/mkorobovv/my-rest/internal/app/domain/order"
+	"net/http"
+	"time"
 )
 
 type responseError struct {
@@ -26,7 +25,7 @@ type OrderDTO struct {
 	TrackNumber *string      `json:"track_number" validate:"required"`
 	Locale      *string      `json:"locale" validate:"required"`
 	CustomerID  *int64       `json:"customer_id" validate:"required"`
-	CreatedDt   *time.Time   `json:"created_dt" validate:"required"`
+	CreatedDt   *string      `json:"created_dt"`
 	Payment     *PaymentDTO  `json:"payment" validate:"required"`
 	Delivery    *DeliveryDTO `json:"delivery" validate:"required"`
 	Items       []ItemDTO    `json:"items" validate:"dive"`
@@ -64,10 +63,26 @@ func (dto OrderDTO) toRequest() order.Order {
 		TrackNumber: *dto.TrackNumber,
 		Locale:      *dto.Locale,
 		CustomerID:  *dto.CustomerID,
-		CreatedDt:   *dto.CreatedDt,
 		Payment:     dto.Payment.toRequest(),
 		Delivery:    dto.Delivery.toRequest(),
 		Items:       toItemRequests(dto.Items),
+	}
+}
+
+func toGetOrderResponse(_order order.Order) OrderDTO {
+	createdDt := _order.CreatedDt.Format(time.DateTime)
+	delivery := toGetDeliveryResponse(_order.Delivery)
+	payment := toGetPaymentResponse(_order.Payment)
+
+	return OrderDTO{
+		UID:         &_order.UID,
+		TrackNumber: &_order.TrackNumber,
+		Locale:      &_order.Locale,
+		CustomerID:  &_order.CustomerID,
+		CreatedDt:   &createdDt,
+		Payment:     &payment,
+		Delivery:    &delivery,
+		Items:       toGetItemsResponse(_order.Items),
 	}
 }
 
@@ -103,15 +118,38 @@ func toItemRequests(dtos []ItemDTO) []order.Item {
 	return items
 }
 
+func toGetItemResponse(item order.Item) ItemDTO {
+	return ItemDTO{
+		ChrtID:     &item.ChrtID,
+		Price:      &item.Price,
+		Name:       &item.Name,
+		Sale:       item.Sale,
+		TotalPrice: &item.TotalPrice,
+		NmID:       item.NmID,
+	}
+}
+
+func toGetItemsResponse(items []order.Item) []ItemDTO {
+	dtos := make([]ItemDTO, 0, len(items))
+
+	for _, item := range items {
+		dto := toGetItemResponse(item)
+
+		dtos = append(dtos, dto)
+	}
+
+	return dtos
+}
+
 type PaymentDTO struct {
-	TransactionID *string    `json:"transaction_id" validate:"required"`
-	Currency      *string    `json:"currency" validate:"required"`
-	Amount        *float64   `json:"amount" validate:"gt=0"`
-	Provider      *string    `json:"provider" validate:"required"`
-	PaymentDt     *time.Time `json:"payment_dt" validate:"required"`
-	DeliveryCost  *float64   `json:"delivery_cost" validate:"gte=0"`
-	GoodsTotal    *float64   `json:"goods_total" validate:"gt=0"`
-	Bank          *string    `json:"bank" validate:"required"`
+	TransactionID *string  `json:"transaction_id" validate:"required"`
+	Currency      *string  `json:"currency" validate:"required"`
+	Amount        *float64 `json:"amount" validate:"gt=0"`
+	Provider      *string  `json:"provider" validate:"required"`
+	PaymentDt     *string  `json:"payment_dt" validate:"required"`
+	DeliveryCost  *float64 `json:"delivery_cost" validate:"gte=0"`
+	GoodsTotal    *float64 `json:"goods_total" validate:"gt=0"`
+	Bank          *string  `json:"bank" validate:"required"`
 }
 
 func (dto PaymentDTO) toRequest() order.Payment {
@@ -120,16 +158,30 @@ func (dto PaymentDTO) toRequest() order.Payment {
 		Currency:      *dto.Currency,
 		Amount:        *dto.Amount,
 		Provider:      *dto.Provider,
-		PaymentDt:     *dto.PaymentDt,
 		DeliveryCost:  *dto.DeliveryCost,
 		GoodsTotal:    *dto.GoodsTotal,
 		Bank:          *dto.Bank,
 	}
 }
 
+func toGetPaymentResponse(payment order.Payment) PaymentDTO {
+	paymentDt := payment.PaymentDt.Format(time.DateTime)
+
+	return PaymentDTO{
+		TransactionID: &payment.TransactionID,
+		Currency:      &payment.Currency,
+		Amount:        &payment.Amount,
+		Provider:      &payment.Provider,
+		DeliveryCost:  &payment.DeliveryCost,
+		GoodsTotal:    &payment.GoodsTotal,
+		Bank:          &payment.Bank,
+		PaymentDt:     &paymentDt,
+	}
+}
+
 type DeliveryDTO struct {
 	RecipientName *string `json:"recipient_name" validate:"required"`
-	PhoneNumber   *string `json:"phone_number" validate:"required,len=11"`
+	PhoneNumber   *string `json:"phone_number" validate:"required,len=12"`
 	ZipCode       *string `json:"zip_code" validate:"required"`
 	Address       *string `json:"address" validate:"required"`
 	Email         *string `json:"email" validate:"email"`
@@ -142,5 +194,15 @@ func (dto DeliveryDTO) toRequest() order.Delivery {
 		ZipCode:       *dto.ZipCode,
 		Address:       *dto.Address,
 		Email:         dto.Email,
+	}
+}
+
+func toGetDeliveryResponse(delivery order.Delivery) DeliveryDTO {
+	return DeliveryDTO{
+		RecipientName: &delivery.RecipientName,
+		PhoneNumber:   &delivery.PhoneNumber,
+		ZipCode:       &delivery.ZipCode,
+		Address:       &delivery.Address,
+		Email:         delivery.Email,
 	}
 }
