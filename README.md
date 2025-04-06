@@ -62,8 +62,6 @@ Case error:
 }
 ```
 
-## <a name="1.1">1.1 Update order:</a>
-
 ## <a name="1.2">1.2 Get order:</a>
 
 &emsp;`http://localhost:8080/api/v1/orders/{trackNumber}`  
