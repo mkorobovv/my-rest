@@ -8,6 +8,9 @@ import (
 )
 
 func (repo *OrdersRepository) Create(ctx context.Context, _order order.Order) (uid string, err error) {
+	ctx, cancel := context.WithTimeout(ctx, 60*time.Second)
+	defer cancel()
+
 	query, args, err := getQueryCreate(_order)
 	if err != nil {
 		return "", err
